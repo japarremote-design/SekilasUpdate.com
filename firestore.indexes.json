@@ -1,0 +1,14 @@
+{
+  "//": "Kueri beranda menyaring status DAN mengurutkan createdAt sekaligus. Firestore butuh indeks gabungan untuk itu — tanpa ini, beranda gagal memuat dengan pesan 'The query requires an index'. Terapkan lewat: firebase deploy --only firestore:indexes, atau klik tautan yang muncul di pesan errornya.",
+  "indexes": [
+    {
+      "collectionGroup": "articles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "createdAt", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

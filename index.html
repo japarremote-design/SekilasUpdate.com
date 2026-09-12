@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SekilasUpdate.com - Berita Terupdate &amp; Terpercaya</title>
+    <meta name="description" content="SekilasUpdate.com menyajikan berita terupdate dan terpercaya, tajam dan mendalam, seputar politik, daerah, ekonomi, dan pendidikan." />
+    <meta name="keywords" content="sekilas update, sekilasupdate, sekilasupdate.com, berita terupdate, berita terpercaya, berita hari ini, portal berita" />
+
+    <!--
+      Urutan penting. Sebagian browser memakai deklarasi PNG bila ada, jadi
+      favicon-32.png ditaruh setelah .ico supaya dialah yang dipakai di tab.
+      Isinya versi sederhana tanpa palang gerak, yang masih terbaca di ukuran
+      mungil; .ico tetap disediakan untuk browser lama dan pintasan desktop.
+
+      ?v=3 memaksa browser mengunduh ulang. Favicon disimpan di cache terpisah
+      yang tidak ikut terhapus oleh hard refresh biasa, jadi tanpa penanda ini
+      ikon lama bisa bertahan berhari-hari walau berkasnya sudah diganti.
+      Naikkan angkanya setiap kali ikonnya berubah lagi — kali ini dinaikkan
+      karena seluruh ikon berganti dari PASEK.ID ke SekilasUpdate.com.
+    -->
+    <link rel="icon" href="/favicon.ico?v=3" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png?v=3" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=3" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/logo-icon-512.png?v=3" />
+    <meta name="theme-color" content="#141B34" />
+
+    <!-- Umpan berita untuk pembaca RSS dan agregator -->
+    <link rel="alternate" type="application/rss+xml" title="SekilasUpdate.com" href="/rss.xml" />
+
+    <!-- Open Graph (fallback default, dipakai kalau halaman/bot tidak dapat versi dinamis dari middleware) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="SekilasUpdate.com" />
+    <meta property="og:title" content="SekilasUpdate.com - Berita Terupdate &amp; Terpercaya" />
+    <meta property="og:description" content="SekilasUpdate.com menyajikan berita terupdate dan terpercaya, tajam dan mendalam, seputar politik, daerah, ekonomi, dan pendidikan." />
+    <meta property="og:image" content="https://sekilasupdate.com/og-default.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:url" content="https://sekilasupdate.com/" />
+
+    <!-- Twitter/X Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SekilasUpdate.com - Berita Terupdate &amp; Terpercaya" />
+    <meta name="twitter:description" content="SekilasUpdate.com menyajikan berita terupdate dan terpercaya, tajam dan mendalam, seputar politik, daerah, ekonomi, dan pendidikan." />
+    <meta name="twitter:image" content="https://sekilasupdate.com/og-default.jpg" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

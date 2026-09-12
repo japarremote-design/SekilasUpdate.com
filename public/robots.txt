@@ -1,0 +1,9 @@
+# SekilasUpdate.com
+User-agent: *
+Allow: /
+
+# Ruang Redaksi tidak untuk diindeks — halaman internal kru.
+Disallow: /redaksi
+
+# Berkas ini statis, jadi tidak ikut env var SITE_URL — domainnya ditulis manual.
+Sitemap: https://sekilasupdate.com/sitemap.xml

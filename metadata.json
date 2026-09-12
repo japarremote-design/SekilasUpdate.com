@@ -1,0 +1,6 @@
+{
+  "name": "SekilasUpdate.com",
+  "description": "SekilasUpdate.com - Berita Terupdate & Terpercaya. Portal berita real-time dengan autentikasi Google dan database Firestore.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

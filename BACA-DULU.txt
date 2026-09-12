@@ -1,0 +1,109 @@
+PAKET SekilasUpdate.com — DAFTAR PERIKSA SEBELUM DAN SESUDAH DEPLOY
+===================================================================
+
+Ini PROJECT UTUH, bukan paket tambalan. Semua berkas ada di dalamnya,
+termasuk src/lib/admin.ts dan firestore.rules.
+
+Rincian teknis lengkap ada di README.md. Berkas ini hanya urutan kerjanya.
+
+
+A. SEBELUM DEPLOY
+-----------------
+
+[ ] 1. Email admin
+       Buka src/lib/admin.ts. Isinya masih dua alamat bawaan dari situs
+       pendahulu. Ganti dengan alamat Gmail yang om pakai login. Kalau yang
+       lama tidak dihapus, pemiliknya tetap bisa masuk sebagai admin.
+
+[ ] 2. Firebase
+       Buat project Firebase baru, lalu isi kredensialnya lewat Environment
+       Variables di Vercel (VITE_FIREBASE_*). Daftar variabelnya ada di
+       README.md. Env var menimpa isi firebase-applet-config.json, jadi
+       berkas itu boleh dibiarkan berisi penanda GANTI-DENGAN-*.
+
+       Kalau env var TIDAK diisi, situs gagal terhubung ke database dan
+       halamannya kosong — ini penyebab kegagalan deploy yang paling sering.
+
+[ ] 3. SITE_URL
+       Set ke https://sekilasupdate.com. Dipakai RSS dan sitemap untuk
+       menulis alamat lengkap. Pratinjau WhatsApp TIDAK memakai ini — ia
+       membaca alamat dari permintaan yang masuk, jadi tetap benar walau
+       situsnya masih di alamat *.vercel.app.
+
+[ ] 4. Langkah di Firebase Console
+       Ikuti bagian "Langkah wajib di Firebase Console" di README.md:
+       aktifkan provider Authentication, daftarkan authorized domains
+       (termasuk domain *.vercel.app milik project), buat Firestore, dan
+       publish isi firestore.rules.
+
+[ ] 5. Jangan ikut ter-commit
+       service-account.json. Sudah masuk .gitignore — pastikan dengan
+       `git status` sebelum push.
+
+[ ] 6. npm install lalu npm run lint, pastikan bersih sebelum push.
+
+
+B. SESUDAH DEPLOY — WAJIB DIPERIKSA SENDIRI
+-------------------------------------------
+
+Empat hal berikut hanya bisa dibuktikan di lingkungan hidup:
+
+[ ] 7. Pratinjau WhatsApp
+       Kirim tautan beranda dan satu tautan berita ke chat pribadi. Harus
+       muncul gambar, judul, dan keterangan. Kalau gambarnya tidak muncul,
+       pastikan /og-default.jpg bisa dibuka langsung di browser.
+
+[ ] 8. /rss.xml dan /sitemap.xml
+       Buka keduanya di browser. Harus berupa XML berisi berita, bukan
+       halaman error. Keduanya butuh koneksi Firestore.
+
+[ ] 9. Login Ruang Redaksi
+       Buka /redaksi, masuk dengan akun kru. Panel dalamnya belum pernah
+       diuji dengan data sungguhan.
+
+[ ] 10. Ikon di tab dan layar utama
+        Favicon disimpan di cache terpisah yang bandel. Kalau ikon lama masih
+        muncul, naikkan angka ?v=3 di index.html jadi ?v=4.
+
+
+C. PINDAH KE DOMAIN sekilasupdate.com
+-------------------------------------
+
+[ ] 11. Daftarkan domainnya — per 1 September 2026 masih kosong, belum ada
+        yang memakai.
+
+[ ] 12. Tambahkan di Vercel -> Settings -> Domains, arahkan DNS-nya.
+
+[ ] 13. Tambahkan domain baru ke Authorized domains di Firebase.
+
+        Tidak ada alamat yang perlu diubah di kode. Semua sudah menunjuk
+        sekilasupdate.com, dan pratinjau sosial mengikuti alamat yang sedang
+        diakses.
+
+
+D. BERITA WARISAN DARI SITUS LAMA
+---------------------------------
+
+[ ] 14. Baris tempat ("MOJOKERTO, PASEK.ID - ...") tidak perlu disentuh.
+        Polanya sudah mengenali nama lama dan menampilkannya sebagai
+        SekilasUpdate.com dengan sendirinya.
+
+[ ] 15. Nama penulis perlu satu klik: Ruang Redaksi -> Kelola Berita ->
+        tombol perbaiki penulis. Mengganti "Redaksi PASEK.ID" jadi
+        "Redaksi SekilasUpdate.com" di semua berita sekaligus.
+
+
+E. BERKAS YANG TIDAK PERLU DI-DEPLOY, TAPI BOLEH DI-COMMIT
+----------------------------------------------------------
+
+  - scripts/perbaiki-artikel-lama.mjs   (dijalankan lokal saja)
+  - scripts/migrate-rtdb-to-firestore.mjs
+  - scripts/build-favicon.py
+
+Membuat ulang ikon:
+
+    python3 scripts/build-favicon.py
+
+Menghasilkan favicon.ico, favicon-32.png, apple-touch-icon.png, dan
+logo-icon-512.png. Wordmark TIDAK dibuat skrip ini — butuh berkas huruf yang
+tidak disimpan di repo, jadi logo-wordmark.png diganti tangan.

@@ -1,0 +1,165 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------------------------------------------------------------------
+    // Jenjang redaksi SekilasUpdate.com
+    //
+    // Aturan di sini adalah penjaga yang sebenarnya. Tombol yang disembunyikan
+    // di src/lib/roles.ts hanya soal tampilan — siapa pun bisa memanggil
+    // Firestore langsung dari console browser, jadi setiap izin harus
+    // ditegakkan ulang di sini. Kalau roles.ts diubah, ubah file ini juga.
+    // ---------------------------------------------------------------------
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // Pintu masuk pertama. Sebelum ada satu pun dokumen di /newsroomUsers,
+    // belum ada seorang pun yang bisa membuat akun kru — jadi email di daftar
+    // ini selalu dianggap Super Admin. HARUS SAMA dengan ADMIN_EMAILS di
+    // src/lib/admin.ts.
+    function isBootstrapAdmin() {
+      return signedIn() && request.auth.token.email in [
+        'sekilasupdate.com@gmail.com',
+        'sekilasupdate.com@gmail.com'
+      ];
+    }
+
+    // Profil kru redaksi disimpan di /newsroomUsers/{uid}.
+    function crew() {
+      return get(/databases/$(database)/documents/newsroomUsers/$(request.auth.uid)).data;
+    }
+
+    function hasProfile() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/newsroomUsers/$(request.auth.uid))
+        && crew().isActive == true;
+    }
+
+    function isCrew() {
+      return hasProfile() || isBootstrapAdmin();
+    }
+
+    function hasRole(role) {
+      return hasProfile() && crew().role == role;
+    }
+
+    function isSuperAdmin() {
+      return isBootstrapAdmin() || hasRole('Super Admin');
+    }
+
+    // Redaktur & Editor sejajar: boleh menyunting dan menerbitkan.
+    function isDeskEditor() {
+      return hasRole('Redaktur') || hasRole('Editor');
+    }
+
+    // Artikel lama tanpa field status dianggap sudah terbit.
+    function statusOf(data) {
+      return 'status' in data ? data.status : 'Published';
+    }
+
+    function ownsArticle(data) {
+      return signedIn() && 'authorUid' in data && data.authorUid == request.auth.uid;
+    }
+
+    // ---------------------------------------------------------------------
+    // Artikel
+    // ---------------------------------------------------------------------
+    match /articles/{articleId} {
+      // Pembaca umum hanya boleh melihat berita yang sudah terbit.
+      // Kru redaksi boleh membuka draft untuk disunting.
+      allow read: if isCrew() || statusOf(resource.data) == 'Published';
+
+      // Reporter tidak boleh menerbitkan sendiri — maksimal Ready for Editor.
+      allow create: if isCrew()
+        && (isSuperAdmin() || isDeskEditor() || statusOf(request.resource.data) != 'Published');
+
+      allow update: if isSuperAdmin()
+        || isDeskEditor()
+        // Reporter: hanya draft miliknya sendiri, dan tidak boleh menaikkannya
+        // langsung ke Published.
+        || (isCrew()
+            && ownsArticle(resource.data)
+            && statusOf(resource.data) == 'Draft'
+            && statusOf(request.resource.data) != 'Published')
+        // Pembaca boleh menambah hitungan views/likes, tapi TIDAK boleh
+        // menyentuh field lain lewat celah ini.
+        || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views', 'likes']);
+
+      // Penghapusan permanen hanya untuk Super Admin. Penghapusan sehari-hari
+      // memakai isActive=false lewat aturan update di atas.
+      allow delete: if isSuperAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // Akun kru redaksi
+    // ---------------------------------------------------------------------
+    match /newsroomUsers/{uid} {
+      // Kru boleh membaca profilnya sendiri (untuk tahu rolenya saat login);
+      // Super Admin boleh membaca semuanya untuk panel manajemen user.
+      allow read: if signedIn() && (request.auth.uid == uid || isSuperAdmin());
+
+      // Hanya Super Admin yang boleh membuat/mengubah akun — termasuk role.
+      // Kru biasa tidak bisa menaikkan rolenya sendiri.
+      allow create, update: if isSuperAdmin();
+      allow delete: if false;
+    }
+
+    // ---------------------------------------------------------------------
+    // Pengaturan situs (logo)
+    // ---------------------------------------------------------------------
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+
+    // ---------------------------------------------------------------------
+    // Komentar
+    // ---------------------------------------------------------------------
+    match /comments/{commentId} {
+      allow read: if true;
+
+      // Termasuk komentar tamu: aplikasi mendaftarkan sesi anonim lebih dulu,
+      // jadi request tetap membawa auth walau pembacanya tidak punya akun.
+      allow create: if signedIn()
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 2000;
+
+      // Penulis boleh menghapus komentarnya sendiri; redaksi boleh memoderasi.
+      allow update, delete: if (signedIn() && request.auth.uid == resource.data.userId)
+        || isSuperAdmin() || isDeskEditor();
+    }
+
+    // ---------------------------------------------------------------------
+    // Bookmark pembaca
+    // ---------------------------------------------------------------------
+    match /bookmarks/{bookmarkId} {
+      allow read: if signedIn() && resource.data.userId == request.auth.uid;
+      allow create: if signedIn() && request.resource.data.userId == request.auth.uid;
+      allow delete: if signedIn() && resource.data.userId == request.auth.uid;
+    }
+
+    // ---------------------------------------------------------------------
+    // Iklan, halaman statis, kategori
+    // ---------------------------------------------------------------------
+    match /ads/{adId} {
+      allow read: if true;
+      allow create, update, delete: if isSuperAdmin();
+    }
+
+    match /pages/{pageSlug} {
+      allow read: if true;
+      allow create, update: if isSuperAdmin() || isDeskEditor();
+      allow delete: if isSuperAdmin();
+    }
+
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow create, update: if isSuperAdmin();
+      allow delete: if isSuperAdmin();
+    }
+  }
+}

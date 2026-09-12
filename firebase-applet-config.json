@@ -1,0 +1,13 @@
+{
+  "_comment": "GANTI SEMUA NILAI DI BAWAH dengan config dari Firebase Console project SekilasUpdate.com yang baru (Project settings > General > Your apps > Web app > SDK setup and configuration > Config). Alternatifnya, isi lewat Environment Variables di Vercel (VITE_FIREBASE_*) — env var akan menimpa file ini.",
+  "projectId": "sekilas-update-com",
+  "appId": "1:841595998345:web:09aa4c0a3cde1519bbb658",
+  "apiKey": "AIzaSyBMIvxquqaPLM6noxeeyHcN-M87Ef41r44",
+  "authDomain": "sekilas-update-com.firebaseapp.com",
+  "firestoreDatabaseId": "",
+  "storageBucket": "sekilas-update-com.firebasestorage.app",
+  "messagingSenderId": "841595998345",
+  "measurementId": "",
+  "oAuthClientId": "",
+  "recaptchaSiteKey": ""
+}

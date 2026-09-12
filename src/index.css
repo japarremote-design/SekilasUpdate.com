@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+/*
+ * Animasi kustom. Tailwind v4 mengambil utility `animate-*` dari variabel
+ * --animate-* di blok @theme, jadi `animate-ticker` dan `animate-fadeIn`
+ * di bawah ini otomatis tersedia sebagai class.
+ */
+@theme {
+  --animate-ticker: ticker 32s linear infinite;
+  --animate-fadeIn: fadeIn 0.18s ease-out;
+}
+
+@keyframes ticker {
+  from { transform: translateX(0); }
+  /* Daftar judul dirender dua kali, jadi -50% = tepat satu putaran penuh. */
+  to { transform: translateX(-50%); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Hormati setelan perangkat yang meminta animasi dikurangi. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-ticker {
+    animation: none;
+  }
+}

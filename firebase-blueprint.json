@@ -1,0 +1,50 @@
+{
+  "entities": {
+    "articles": {
+      "title": "Articles",
+      "description": "News articles for SekilasUpdate.com portal",
+      "properties": {
+        "id": { "type": "string", "description": "Unique article identifier" },
+        "title": { "type": "string", "description": "Headline of the article" },
+        "category": { "type": "string", "description": "Category e.g. Nasional, Politik, Daerah, Ekonomi, Pendidikan, Hukum" },
+        "content": { "type": "string", "description": "Full content body of the article" },
+        "excerpt": { "type": "string", "description": "Short excerpt summary" },
+        "imageUrl": { "type": "string", "description": "Image URL hotlinked or hosted" },
+        "imageCaption": { "type": "string", "description": "Caption for featured image" },
+        "author": { "type": "string", "description": "Author or editorial name" },
+        "authorRole": { "type": "string", "description": "Author title or role" },
+        "createdAt": { "type": "string", "description": "ISO string date of creation" },
+        "views": { "type": "number", "description": "Total view count" },
+        "likes": { "type": "number", "description": "Total likes count" },
+        "tags": { "type": "array", "description": "List of tag strings" },
+        "isHero": { "type": "boolean", "description": "Featured main hero article" },
+        "isTrending": { "type": "boolean", "description": "Featured in trending list" },
+        "isOpinion": { "type": "boolean", "description": "Is an opinion article" }
+      }
+    },
+    "comments": {
+      "title": "Comments",
+      "description": "User comments on articles",
+      "properties": {
+        "id": { "type": "string", "description": "Comment ID" },
+        "articleId": { "type": "string", "description": "Associated article ID" },
+        "userId": { "type": "string", "description": "User ID of commenter" },
+        "userName": { "type": "string", "description": "Display name of commenter" },
+        "userAvatar": { "type": "string", "description": "Avatar URL of commenter" },
+        "text": { "type": "string", "description": "Comment text content" },
+        "createdAt": { "type": "string", "description": "ISO timestamp" }
+      }
+    },
+    "bookmarks": {
+      "title": "Bookmarks",
+      "description": "Saved articles by users",
+      "properties": {
+        "id": { "type": "string", "description": "Bookmark ID" },
+        "userId": { "type": "string", "description": "User ID" },
+        "articleId": { "type": "string", "description": "Bookmarked article ID" },
+        "createdAt": { "type": "string", "description": "ISO timestamp" }
+      }
+    }
+  },
+  "securityRules": "rules_version = '2'; service cloud.firestore { match /databases/{database}/documents { match /articles/{articleId} { allow read: if true; allow write: if request.auth != null; } match /comments/{commentId} { allow read: if true; allow create: if request.auth != null; allow update, delete: if request.auth != null && request.auth.uid == resource.data.userId; } match /bookmarks/{bookmarkId} { allow read, write: if request.auth != null && request.auth.uid == request.resource.data.userId; } } }"
+}

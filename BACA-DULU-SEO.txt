@@ -1,0 +1,49 @@
+PANEL SKOR SEO — SekilasUpdate.com
+==================================
+
+Ini BUKAN project utuh, hanya berkas yang berubah. Sengaja begitu supaya
+suntingan om sendiri (terutama src/lib/admin.ts) tidak ikut tertimpa.
+
+Ekstrak dari AKAR PROJECT, sejajar package.json, timpa yang lama.
+
+BERKAS BARU
+  src/lib/seo.ts               mesin analisis
+  src/components/SeoPanel.tsx  tampilan panel
+
+BERKAS YANG DIUBAH
+  src/types.ts                       + field focusKeyphrase
+  src/components/ArticleEditorModal.tsx
+      + kolom "Kata Kunci Fokus" di bawah judul
+      + panel Skor SEO tepat di atas tombol simpan
+      + kata kunci ikut tersimpan bersama beritanya
+
+SETELAH EKSTRAK
+  1. npm run lint     <- pastikan bersih
+  2. git add -A && git commit && git push
+  3. Vercel deploy otomatis
+
+TIDAK ADA environment variable baru. Tidak ada perubahan aturan Firestore.
+Berita lama tetap aman — yang belum punya kata kunci fokus hanya akan
+menampilkan peringatan untuk mengisinya.
+
+CARA PAKAI
+  Buka Tulis/Edit Berita, isi "Kata Kunci Fokus" dengan satu frasa yang
+  paling mewakili berita. Panel di bawah menilai realtime sambil mengetik.
+
+  Warna: merah -> oranye -> kuning -> hijau.
+  Lampu hijau ditahan selama masih ada pemeriksaan merah, dan alasannya
+  ditulis di kepala panel.
+
+22 PEMERIKSAAN, TIGA KELOMPOK
+  SEO (11)         kata kunci di judul/URL/ringkasan/pembuka, posisi kata
+                   kunci, panjang judul & ringkasan, kepadatan kata kunci,
+                   panjang naskah, gambar utama, tag
+  Keterbacaan (6)  panjang kalimat, panjang paragraf, kalimat pasif,
+                   kata transisi, variasi awal kalimat, indeks kemudahan baca
+  Jurnalistik (5)  baris tempat, panjang lead, kutipan narasumber,
+                   gaya judul, ringkasan mandiri
+
+Kelompok Jurnalistik tidak ada di Yoast maupun Rank Math. Bagian keterbacaan
+juga disusun untuk bahasa Indonesia — pasif berawalan "di-" dan "ter-",
+kata transisi Indonesia, dan penghitung suku kata vokal. Alasan tiap ambang
+ditulis di komentar src/lib/seo.ts.
